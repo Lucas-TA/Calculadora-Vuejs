@@ -1,19 +1,22 @@
 <script setup lang="ts">
-    import { ref } from 'vue';
-    
-    const firstNumber = ref<number | string>(0);
-    const secondNumber = ref<number | string>(0);
-    const signal = ref<string>('sum');
+    import { reactive } from 'vue';
 
-    function calculate(): number | string {
-    const num1 = parseFloat(firstNumber.value.toString());
-    const num2 = parseFloat(secondNumber.value.toString());
-    
-    if (isNaN(num1) || isNaN(num2)) {
-        return "Digite os valores nos campos disponíveis";
-    }
+    const state = reactive({
+        firstNumber: 0,
+        secondNumber: 0,
+        signal: 'sum',
+    })
 
-        switch (signal.value) {
+    function calculate() {
+        // Convert input values to numbers
+        const num1:number = state.firstNumber;
+        const num2:number = state.secondNumber;
+
+        if (isNaN(num1) || isNaN(num2)) {
+            return "Digite os valores nos campos disponíveis";
+        }
+
+        switch (state.signal) {
             case 'sum':
                 return num1 + num2;
             case 'minus':
@@ -22,7 +25,7 @@
                 return num1 * num2;
             case 'divide':
                 if (num2 === 0) {
-                    return "Cannot divide by zero";
+                    return "Não é possível dividir por zero";
                 }
                 return num1 / num2;
             default:
@@ -40,18 +43,20 @@
         <h3 class="text-center">Digite dois números e selecione a operação desejada:</h3>
         <div class="text-center d-flex justify-content-center align-items-center p-5">
             <input
-                @input="firstNumber = ($event.target as HTMLInputElement).value"
+                @change="(e:any) => {if(e.target) state.firstNumber = parseFloat(e.target.value)}"
                 type="number" 
                 placeholder="Digite um número"
             >
-            <select v-model="signal" class="btn btn-primary text-center d-flex me-2 ms-2">
+            <select
+                @change="(e:any)=> { if (e.target) state.signal = (e.target as HTMLOptionElement).value }"
+                class="btn btn-primary text-center d-flex me-2 ms-2">
                 <option value="sum">+</option>
                 <option value="minus">-</option>
                 <option value="multiply">x</option>
                 <option value="divide">&#247;</option>
             </select>
             <input
-                @input="secondNumber = ($event.target as HTMLInputElement).value"
+                @change="(e:any) => {if(e.target) state.secondNumber = parseFloat(e.target.value)}"
                 type="number" 
                 placeholder="Digite um número"
             >
